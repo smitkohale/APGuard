@@ -47,7 +47,7 @@ col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total Flags", f"{len(flags):,}")
 col2.metric("Total $ at Risk", f"${flags['amount_at_risk'].sum():,.0f}")
 col3.metric("Vendors Flagged", f"{flags['vendor_id'].nunique():,}")
-col4.metric("Rules Firing", f"{flags['rule_code'].nunique()} / 8")
+col4.metric("Rules Firing", f"{flags['rule_code'].nunique()} / 9")
 
 st.divider()
 
