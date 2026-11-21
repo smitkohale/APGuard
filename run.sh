@@ -1,27 +1,23 @@
 #!/usr/bin/env bash
-# APGuard end-to-end setup. Requires PostgreSQL running locally with a
-# 'postgres' user/password 'apguard' (edit db/load_data.py + api/main.py if different).
-set -e
+# APGuard end-to-end setup without Docker. Needs PostgreSQL and a .env file with
+# DATABASE_URL (see .env.example). For the zero-setup route: docker compose up --build
+set -euo pipefail
 
-echo "== 1/6 Installing dependencies =="
-pip install -r requirements.txt --break-system-packages
+if [ ! -f .env ]; then
+  echo "Missing .env: copy .env.example to .env and set DATABASE_URL." >&2
+  exit 1
+fi
 
-echo "== 2/6 Applying schema =="
-PGPASSWORD=apguard psql -h localhost -U postgres -d apguard -f db/schema.sql
+echo "== 1/7 Installing dependencies";   pip install -q -r requirements-dev.txt
+PSQL_URL=$(python -c 'import os,dotenv;dotenv.load_dotenv();print(os.environ["DATABASE_URL"].replace("+psycopg2",""))')
+echo "== 2/7 Generating synthetic data"; python data/generate_data.py
+echo "== 3/7 Applying schema";           psql "$PSQL_URL" -q -f db/schema.sql
+echo "== 4/7 Loading data";              python db/load_data.py
+echo "== 5/7 Running detection";         python scripts/run_pipeline.py
+echo "== 6/7 Simulating reviews";        python scripts/simulate_reviews.py
+echo "== 7/7 Evaluating and testing";    python scripts/evaluate.py && pytest -m "not db" -q
 
-echo "== 3/6 Generating synthetic data =="
-python3 data/generate_data.py
-
-echo "== 4/6 Loading into Postgres =="
-python3 db/load_data.py
-
-echo "== 5/6 Running rules + evaluating against ground truth =="
-python3 scripts/run_and_evaluate.py
-
-echo "== 6/6 Running tests =="
-python3 -m pytest tests/ -v
-
-echo ""
-echo "Setup complete. Start the app with:"
-echo "  uvicorn api.main:app --reload --port 8000        # API"
-echo "  streamlit run dashboard/app.py --server.port 8501 # Dashboard"
+echo
+echo "Done. Start the app with:"
+echo "  uvicorn api.main:app --reload --port 8000          # API, docs at /docs"
+echo "  streamlit run dashboard/app.py --server.port 8501  # dashboard"

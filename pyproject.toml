@@ -1,0 +1,23 @@
+[project]
+name = "apguard"
+version = "2.0.0"
+description = "Accounts payable leakage detection: rules, analytics, evaluation and case workflow"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests"]
+markers = ["db: integration tests that need APGUARD_TEST_DATABASE_URL (a disposable PostgreSQL database)"]
+filterwarnings = ["ignore::DeprecationWarning:starlette.*"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py311"
+extend-exclude = ["data/generated"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
+ignore = ["B008", "SIM108", "UP007", "UP045"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]

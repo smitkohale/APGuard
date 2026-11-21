@@ -1,0 +1,903 @@
+{
+  "generated_at": "2026-11-21T23:47:54+00:00",
+  "config": {
+    "approval_threshold": 5000.0,
+    "duplicate_invoice": {
+      "fuzzy": true,
+      "amount_tolerance_abs": 1.0,
+      "amount_tolerance_pct": 0.005,
+      "window_days": 90,
+      "cross_po_window_days": 45,
+      "cross_po_scope": "missing_po_only"
+    },
+    "three_way_match": {
+      "qty_tolerance": 0
+    },
+    "contract_price": {
+      "price_tolerance_pct": 0.001
+    },
+    "tax_validation": {
+      "tolerance_pct": 0.01,
+      "tolerance_abs": 0.02
+    },
+    "invoice_splitting": {
+      "window_days": 10
+    },
+    "overpayment": {
+      "tolerance_pct": 0.001,
+      "tolerance_abs": 0.05
+    },
+    "new_vendor_payment": {
+      "window_days": 30,
+      "min_payment": 10000.0
+    },
+    "benford": {
+      "min_invoices": 100,
+      "mad_threshold": 0.015,
+      "p_value": 0.001
+    },
+    "price_outlier": {
+      "min_observations": 15,
+      "robust_z_threshold": 3.5,
+      "min_log_mad": 0.05
+    }
+  },
+  "dataset": {
+    "vendors": 150,
+    "contracts": 230,
+    "purchase_orders": 12953,
+    "goods_receipts": 13241,
+    "invoices": 13875,
+    "payments": 14065
+  },
+  "injected_exceptions": 2420,
+  "benign_lookalikes": 1420,
+  "runtime_seconds": 0.835,
+  "flags": 2457,
+  "gross_at_risk": 30701637.32,
+  "net_exposure": 24642455.49,
+  "scores": [
+    {
+      "rule": "R1",
+      "name": "Duplicate Invoice",
+      "category": "control",
+      "exception_type": "duplicate_invoice",
+      "level": "invoice",
+      "injected": 230,
+      "flagged": 239,
+      "true_positives": 230,
+      "false_positives": 9,
+      "fp_other_exception": 4,
+      "missed": 0,
+      "precision": 0.9623430962343096,
+      "recall": 1.0,
+      "f1": 0.9808102345415778
+    },
+    {
+      "rule": "R2",
+      "name": "Three-Way Match Failure",
+      "category": "control",
+      "exception_type": "three_way_mismatch",
+      "level": "invoice",
+      "injected": 433,
+      "flagged": 433,
+      "true_positives": 433,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R3",
+      "name": "Contract Price Violation",
+      "category": "control",
+      "exception_type": "contract_price_violation",
+      "level": "invoice",
+      "injected": 260,
+      "flagged": 260,
+      "true_positives": 260,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R4",
+      "name": "Missing Purchase Order",
+      "category": "control",
+      "exception_type": "missing_po",
+      "level": "invoice",
+      "injected": 244,
+      "flagged": 244,
+      "true_positives": 244,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R5",
+      "name": "Duplicate Payment",
+      "category": "control",
+      "exception_type": "duplicate_payment",
+      "level": "payment",
+      "injected": 190,
+      "flagged": 190,
+      "true_positives": 190,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R6",
+      "name": "Tax Validation Failure",
+      "category": "control",
+      "exception_type": "tax_mismatch",
+      "level": "invoice",
+      "injected": 220,
+      "flagged": 220,
+      "true_positives": 220,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R7",
+      "name": "Invoice Splitting",
+      "category": "control",
+      "exception_type": "invoice_splitting",
+      "level": "invoice",
+      "injected": 312,
+      "flagged": 312,
+      "true_positives": 312,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R8",
+      "name": "Overpayment",
+      "category": "control",
+      "exception_type": "overpayment",
+      "level": "payment",
+      "injected": 160,
+      "flagged": 160,
+      "true_positives": 160,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R9",
+      "name": "Payment Without Goods Receipt",
+      "category": "control",
+      "exception_type": "payment_without_gr",
+      "level": "invoice",
+      "injected": 210,
+      "flagged": 210,
+      "true_positives": 210,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R10",
+      "name": "Duplicate Vendor Record",
+      "category": "control",
+      "exception_type": "duplicate_vendor",
+      "level": "vendor",
+      "injected": 8,
+      "flagged": 8,
+      "true_positives": 8,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "R11",
+      "name": "New Vendor Large Payment",
+      "category": "control",
+      "exception_type": "new_vendor_large_payment",
+      "level": "payment",
+      "injected": 30,
+      "flagged": 30,
+      "true_positives": 30,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "A1",
+      "name": "Benford Nonconformity",
+      "category": "analytic",
+      "exception_type": "threshold_hugging",
+      "level": "vendor",
+      "injected": 3,
+      "flagged": 3,
+      "true_positives": 3,
+      "false_positives": 0,
+      "fp_other_exception": 0,
+      "missed": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "rule": "A2",
+      "name": "Unit Price Outlier",
+      "category": "analytic",
+      "exception_type": "price_outlier",
+      "level": "invoice",
+      "injected": 120,
+      "flagged": 147,
+      "true_positives": 120,
+      "false_positives": 27,
+      "fp_other_exception": 24,
+      "missed": 0,
+      "precision": 0.8163265306122449,
+      "recall": 1.0,
+      "f1": 0.898876404494382
+    }
+  ],
+  "duplicate_variants": [
+    {
+      "variant": "amount drift",
+      "injected": 54,
+      "exact_recall": 0.0,
+      "apguard_recall": 1.0
+    },
+    {
+      "variant": "exact resubmission",
+      "injected": 71,
+      "exact_recall": 1.0,
+      "apguard_recall": 1.0
+    },
+    {
+      "variant": "re-keyed without PO",
+      "injected": 44,
+      "exact_recall": 0.0,
+      "apguard_recall": 1.0
+    },
+    {
+      "variant": "reformatted number",
+      "injected": 61,
+      "exact_recall": 1.0,
+      "apguard_recall": 1.0
+    }
+  ],
+  "baseline_comparison": [
+    {
+      "rule": "R1",
+      "name": "Duplicate Invoice",
+      "flagged_naive": 1012,
+      "precision_naive": 0.13043478260869565,
+      "recall_naive": 0.5739130434782609,
+      "f1_naive": 0.21256038647342992,
+      "flagged_apguard": 239,
+      "precision_apguard": 0.9623430962343096,
+      "recall_apguard": 1.0,
+      "f1_apguard": 0.9808102345415778
+    },
+    {
+      "rule": "R2",
+      "name": "Three-Way Match Failure",
+      "flagged_naive": 1643,
+      "precision_naive": 0.263542300669507,
+      "recall_naive": 1.0,
+      "f1_naive": 0.41714836223506746,
+      "flagged_apguard": 433,
+      "precision_apguard": 1.0,
+      "recall_apguard": 1.0,
+      "f1_apguard": 1.0
+    },
+    {
+      "rule": "R3",
+      "name": "Contract Price Violation",
+      "flagged_naive": 519,
+      "precision_naive": 0.5009633911368016,
+      "recall_naive": 1.0,
+      "f1_naive": 0.6675224646983311,
+      "flagged_apguard": 260,
+      "precision_apguard": 1.0,
+      "recall_apguard": 1.0,
+      "f1_apguard": 1.0
+    },
+    {
+      "rule": "R6",
+      "name": "Tax Validation Failure",
+      "flagged_naive": 220,
+      "precision_naive": 1.0,
+      "recall_naive": 1.0,
+      "f1_naive": 1.0,
+      "flagged_apguard": 220,
+      "precision_apguard": 1.0,
+      "recall_apguard": 1.0,
+      "f1_apguard": 1.0
+    },
+    {
+      "rule": "R7",
+      "name": "Invoice Splitting",
+      "flagged_naive": 371,
+      "precision_naive": 0.8409703504043127,
+      "recall_naive": 1.0,
+      "f1_naive": 0.9136163982430454,
+      "flagged_apguard": 312,
+      "precision_apguard": 1.0,
+      "recall_apguard": 1.0,
+      "f1_apguard": 1.0
+    },
+    {
+      "rule": "R8",
+      "name": "Overpayment",
+      "flagged_naive": 160,
+      "precision_naive": 1.0,
+      "recall_naive": 1.0,
+      "f1_naive": 1.0,
+      "flagged_apguard": 160,
+      "precision_apguard": 1.0,
+      "recall_apguard": 1.0,
+      "f1_apguard": 1.0
+    }
+  ],
+  "benign_false_positives": [
+    {
+      "pattern": "contract_amendment",
+      "entities": 273,
+      "flagged": 0,
+      "flagged_by": "-",
+      "flagged_naive": 211,
+      "flagged_by_naive": "R1, R2, R3, R7"
+    },
+    {
+      "pattern": "new_vendor_onboarding",
+      "entities": 10,
+      "flagged": 0,
+      "flagged_by": "-",
+      "flagged_naive": 0,
+      "flagged_by_naive": "-"
+    },
+    {
+      "pattern": "partial_delivery",
+      "entities": 400,
+      "flagged": 0,
+      "flagged_by": "-",
+      "flagged_naive": 400,
+      "flagged_by_naive": "R1, R2, R3, R7"
+    },
+    {
+      "pattern": "payment_rounding",
+      "entities": 277,
+      "flagged": 0,
+      "flagged_by": "-",
+      "flagged_naive": 22,
+      "flagged_by_naive": "R1, R2, R3, R7"
+    },
+    {
+      "pattern": "recurring_billing",
+      "entities": 300,
+      "flagged": 0,
+      "flagged_by": "-",
+      "flagged_naive": 0,
+      "flagged_by_naive": "-"
+    },
+    {
+      "pattern": "tax_rounding",
+      "entities": 403,
+      "flagged": 0,
+      "flagged_by": "-",
+      "flagged_naive": 43,
+      "flagged_by_naive": "R1, R2, R3, R7"
+    }
+  ],
+  "sensitivity": [
+    {
+      "parameter": "cross_po_window_days",
+      "value": 0,
+      "flagged": 186,
+      "precision": 1.0,
+      "recall": 0.808695652173913,
+      "f1": 0.8942307692307693
+    },
+    {
+      "parameter": "cross_po_window_days",
+      "value": 7,
+      "flagged": 191,
+      "precision": 1.0,
+      "recall": 0.8304347826086956,
+      "f1": 0.9073634204275535
+    },
+    {
+      "parameter": "cross_po_window_days",
+      "value": 14,
+      "flagged": 197,
+      "precision": 0.9898477157360406,
+      "recall": 0.8478260869565217,
+      "f1": 0.9133489461358314
+    },
+    {
+      "parameter": "cross_po_window_days",
+      "value": 21,
+      "flagged": 209,
+      "precision": 0.9856459330143541,
+      "recall": 0.8956521739130435,
+      "f1": 0.9384965831435079
+    },
+    {
+      "parameter": "cross_po_window_days",
+      "value": 30,
+      "flagged": 227,
+      "precision": 0.9691629955947136,
+      "recall": 0.9565217391304348,
+      "f1": 0.962800875273523
+    },
+    {
+      "parameter": "cross_po_window_days",
+      "value": 45,
+      "flagged": 239,
+      "precision": 0.9623430962343096,
+      "recall": 1.0,
+      "f1": 0.9808102345415778
+    },
+    {
+      "parameter": "cross_po_window_days",
+      "value": 60,
+      "flagged": 241,
+      "precision": 0.9543568464730291,
+      "recall": 1.0,
+      "f1": 0.9766454352441614
+    },
+    {
+      "parameter": "cross_po_scope=any_po, window",
+      "value": 14,
+      "flagged": 280,
+      "precision": 0.6964285714285714,
+      "recall": 0.8478260869565217,
+      "f1": 0.7647058823529412
+    },
+    {
+      "parameter": "cross_po_scope=any_po, window",
+      "value": 30,
+      "flagged": 400,
+      "precision": 0.55,
+      "recall": 0.9565217391304348,
+      "f1": 0.6984126984126985
+    },
+    {
+      "parameter": "cross_po_scope=any_po, window",
+      "value": 45,
+      "flagged": 506,
+      "precision": 0.45454545454545453,
+      "recall": 1.0,
+      "f1": 0.625
+    },
+    {
+      "parameter": "split window_days",
+      "value": 1,
+      "flagged": 66,
+      "precision": 1.0,
+      "recall": 0.21153846153846154,
+      "f1": 0.34920634920634924
+    },
+    {
+      "parameter": "split window_days",
+      "value": 3,
+      "flagged": 229,
+      "precision": 1.0,
+      "recall": 0.7339743589743589,
+      "f1": 0.8465804066543438
+    },
+    {
+      "parameter": "split window_days",
+      "value": 5,
+      "flagged": 312,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "parameter": "split window_days",
+      "value": 10,
+      "flagged": 312,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "parameter": "split window_days",
+      "value": 20,
+      "flagged": 312,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "parameter": "split window_days",
+      "value": 30,
+      "flagged": 312,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "parameter": "robust_z_threshold",
+      "value": 2.5,
+      "flagged": 399,
+      "precision": 0.3007518796992481,
+      "recall": 1.0,
+      "f1": 0.4624277456647399
+    },
+    {
+      "parameter": "robust_z_threshold",
+      "value": 3.0,
+      "flagged": 212,
+      "precision": 0.5660377358490566,
+      "recall": 1.0,
+      "f1": 0.7228915662650602
+    },
+    {
+      "parameter": "robust_z_threshold",
+      "value": 3.5,
+      "flagged": 147,
+      "precision": 0.8163265306122449,
+      "recall": 1.0,
+      "f1": 0.898876404494382
+    },
+    {
+      "parameter": "robust_z_threshold",
+      "value": 4.5,
+      "flagged": 118,
+      "precision": 1.0,
+      "recall": 0.9833333333333333,
+      "f1": 0.9915966386554621
+    },
+    {
+      "parameter": "robust_z_threshold",
+      "value": 5.5,
+      "flagged": 105,
+      "precision": 1.0,
+      "recall": 0.875,
+      "f1": 0.9333333333333333
+    },
+    {
+      "parameter": "min_log_mad (z=3.5)",
+      "value": 0.0,
+      "flagged": 1065,
+      "precision": 0.11267605633802817,
+      "recall": 1.0,
+      "f1": 0.20253164556962025
+    },
+    {
+      "parameter": "min_log_mad (z=3.5)",
+      "value": 0.03,
+      "flagged": 487,
+      "precision": 0.2464065708418891,
+      "recall": 1.0,
+      "f1": 0.39538714991762763
+    },
+    {
+      "parameter": "min_log_mad (z=3.5)",
+      "value": 0.05,
+      "flagged": 147,
+      "precision": 0.8163265306122449,
+      "recall": 1.0,
+      "f1": 0.898876404494382
+    },
+    {
+      "parameter": "min_log_mad (z=3.5)",
+      "value": 0.08,
+      "flagged": 110,
+      "precision": 1.0,
+      "recall": 0.9166666666666666,
+      "f1": 0.9565217391304348
+    },
+    {
+      "parameter": "benford mad_threshold",
+      "value": 0.006,
+      "flagged": 4,
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1": 0.8571428571428571
+    },
+    {
+      "parameter": "benford mad_threshold",
+      "value": 0.01,
+      "flagged": 4,
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1": 0.8571428571428571
+    },
+    {
+      "parameter": "benford mad_threshold",
+      "value": 0.015,
+      "flagged": 3,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "parameter": "benford mad_threshold",
+      "value": 0.025,
+      "flagged": 3,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  ],
+  "isolation_forest": {
+    "features": [
+      "log_total",
+      "price_ratio",
+      "qty_ratio",
+      "has_po",
+      "tax_ratio",
+      "invoices_on_po",
+      "has_receipt",
+      "n_pay",
+      "paid_ratio",
+      "vendor_age"
+    ],
+    "k": 2316,
+    "isolation_forest_precision": 0.6329879101899827,
+    "rules_precision": 0.9977303676804358,
+    "per_type": [
+      {
+        "exception_type": "contract_price_violation",
+        "injected": 260,
+        "isolation_forest_recall": 0.13846153846153847,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "duplicate_invoice",
+        "injected": 230,
+        "isolation_forest_recall": 0.5565217391304348,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "duplicate_payment",
+        "injected": 190,
+        "isolation_forest_recall": 1.0,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "invoice_splitting",
+        "injected": 312,
+        "isolation_forest_recall": 0.7628205128205128,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "missing_po",
+        "injected": 244,
+        "isolation_forest_recall": 1.0,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "new_vendor_large_payment",
+        "injected": 30,
+        "isolation_forest_recall": 0.3,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "overpayment",
+        "injected": 160,
+        "isolation_forest_recall": 0.90625,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "payment_without_gr",
+        "injected": 210,
+        "isolation_forest_recall": 1.0,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "price_outlier",
+        "injected": 120,
+        "isolation_forest_recall": 0.9416666666666667,
+        "rules_recall": 0.016666666666666666
+      },
+      {
+        "exception_type": "tax_mismatch",
+        "injected": 220,
+        "isolation_forest_recall": 0.5545454545454546,
+        "rules_recall": 1.0
+      },
+      {
+        "exception_type": "three_way_mismatch",
+        "injected": 433,
+        "isolation_forest_recall": 0.2840646651270208,
+        "rules_recall": 1.0
+      }
+    ]
+  },
+  "dollar_recall": {
+    "injected_leakage": 24649642.36,
+    "leakage_on_flagged_entities": 24649642.36,
+    "dollar_recall": 1.0
+  },
+  "overlap": {
+    "codes": [
+      "R1",
+      "R2",
+      "R3",
+      "R4",
+      "R5",
+      "R6",
+      "R7",
+      "R8",
+      "R9",
+      "R11",
+      "A2"
+    ],
+    "matrix": [
+      [
+        239,
+        0,
+        0,
+        48,
+        3,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        433,
+        0,
+        0,
+        7,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        260,
+        0,
+        1,
+        0,
+        0,
+        5,
+        0,
+        0,
+        24
+      ],
+      [
+        48,
+        0,
+        0,
+        244,
+        4,
+        0,
+        0,
+        4,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        7,
+        1,
+        4,
+        190,
+        2,
+        10,
+        0,
+        1,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        2,
+        220,
+        0,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        10,
+        0,
+        312,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        3,
+        5,
+        4,
+        0,
+        2,
+        2,
+        160,
+        3,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        3,
+        210,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        30,
+        0
+      ],
+      [
+        0,
+        0,
+        24,
+        0,
+        1,
+        0,
+        0,
+        2,
+        0,
+        0,
+        147
+      ]
+    ]
+  }
+}
