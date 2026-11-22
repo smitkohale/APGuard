@@ -8,7 +8,13 @@ APGuard checks a linked AP ledger (vendors, contracts, purchase orders, goods re
 
 **Read the write-up:** [Building and evaluating an AP leakage detector](docs/CASE_STUDY.md) · **Evaluation report:** [reports/EVALUATION.md](reports/EVALUATION.md)
 
-![Overview](docs/images/overview.png)
+### Live demo
+
+**Dashboard:** https://apguard.streamlit.app · **API docs:** https://apguard.onrender.com/docs
+
+If the app is asleep, click **"Yes, get this app back up!"** and give it about 30 seconds. Both run on free tiers: the dashboard sleeps after 12 hours without visitors, and the API takes about a minute to start after 15 idle minutes. Reviews are disabled on the public dashboard.
+
+![APGuard dashboard: overview, detectors, vendors and a case](docs/images/demo.gif)
 
 Python · pandas · PostgreSQL · SQLAlchemy · FastAPI · Streamlit · Plotly · scikit-learn · pytest · Hypothesis · Docker · GitHub Actions
 
@@ -233,3 +239,7 @@ CI runs lint, unit and evaluation tests, then the integration suite against a Po
 ## Deployment
 
 The dashboard runs on Streamlit Community Cloud and the API on any container host. Both need `DATABASE_URL`. Set `APGUARD_DASHBOARD_READ_ONLY=true` on a public dashboard, set `APGUARD_API_KEY` on the API to enable writes, and restrict `ALLOWED_ORIGINS`. After deploying a new version, re-apply `db/schema.sql` and run the pipeline against the hosted database.
+
+**Keeping the free-tier demo awake.** [`.github/workflows/keep-awake.yml`](.github/workflows/keep-awake.yml) opens the dashboard in a headless browser every 6 hours, clicks the wake-up button if the app is asleep, and warms the API. A plain HTTP ping isn't enough, because the sleep page loads normally and the app only boots when the button is pressed. Point it at other URLs with the repository variables `STREAMLIT_URL` and `API_URL`. This is a best-effort workaround: GitHub can delay scheduled runs, and it disables scheduled workflows after 60 days without repository activity. The job re-enables itself on each run, but an occasional commit is the reliable fix.
+
+Query results are cached for 10 minutes and shared across visitors (`APGUARD_CACHE_TTL`), so only the first visit after a restart waits on the database. The keep-awake visit usually pays that cost.

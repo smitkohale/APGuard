@@ -26,6 +26,10 @@ from rules.registry import RULES, SEVERITIES  # noqa: E402
 st.set_page_config(page_title="APGuard", layout="wide", initial_sidebar_state="expanded")
 
 READ_ONLY = os.getenv("APGUARD_DASHBOARD_READ_ONLY", "false").lower() in ("1", "true", "yes")
+# Cached query results are shared by every visitor of this process, so only the
+# first visit after a restart pays for the database round-trips. Review actions
+# clear the cache immediately; a pipeline run elsewhere shows up within this TTL.
+CACHE_TTL = int(os.getenv("APGUARD_CACHE_TTL", "600"))
 
 # --------------------------------------------------------------------------- #
 # visual system
@@ -118,7 +122,7 @@ def label(text: str) -> None:
 # --------------------------------------------------------------------------- #
 # data
 # --------------------------------------------------------------------------- #
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=CACHE_TTL, show_spinner=False)
 def load_flags() -> pd.DataFrame:
     df = read_sql("""SELECT f.flag_id, f.rule_code, f.rule_name, f.category, f.vendor_id, f.vendor_name,
                             f.invoice_id, f.po_id, f.payment_id, f.severity, f.amount_at_risk, f.details,
@@ -128,17 +132,17 @@ def load_flags() -> pd.DataFrame:
     return df
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=CACHE_TTL, show_spinner=False)
 def load_summary() -> dict:
     return metrics.summary()
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=CACHE_TTL, show_spinner=False)
 def load_vendor_risk() -> pd.DataFrame:
     return metrics.vendor_risk()
 
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=CACHE_TTL, show_spinner=False)
 def load_by_rule() -> pd.DataFrame:
     return metrics.by_rule()
 
@@ -160,8 +164,9 @@ def refresh() -> None:
 
 
 try:
-    flags = load_flags()
-    summary = load_summary()
+    with st.spinner("Loading the ledger. The first load after the app wakes up can take up to a minute."):
+        flags = load_flags()
+        summary = load_summary()
 except Exception as exc:  # pragma: no cover - UI path
     st.error(f"Could not reach the database ({exc.__class__.__name__}). Check DATABASE_URL and that the "
              "pipeline has been run (see README).")
