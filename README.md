@@ -238,7 +238,7 @@ CI runs lint, unit and evaluation tests, then the integration suite against a Po
 
 ## Deployment
 
-The dashboard runs on Streamlit Community Cloud and the API on any container host. Both need `DATABASE_URL`. Set `APGUARD_DASHBOARD_READ_ONLY=true` on a public dashboard, set `APGUARD_API_KEY` on the API to enable writes, and restrict `ALLOWED_ORIGINS`. After deploying a new version, re-apply `db/schema.sql` and run the pipeline against the hosted database.
+The dashboard runs on Streamlit Community Cloud and the API on any container host. Both need `DATABASE_URL`. Set `APGUARD_DASHBOARD_READ_ONLY=true` on a public dashboard, set `APGUARD_API_KEY` on the API to enable writes, and restrict `ALLOWED_ORIGINS`. After deploying a new version, rebuild the hosted database. You don't need a local copy for this: add a repository secret `DATABASE_URL`, then run **Actions → Set up database** and type `RESET`. It generates the data, applies the schema, loads it, runs detection and simulates a review round (`scripts/setup_database.py --yes` does the same locally).
 
 **Keeping the free-tier demo awake.** [`.github/workflows/keep-awake.yml`](.github/workflows/keep-awake.yml) opens the dashboard in a headless browser every 6 hours, clicks the wake-up button if the app is asleep, and warms the API. A plain HTTP ping isn't enough, because the sleep page loads normally and the app only boots when the button is pressed. Point it at other URLs with the repository variables `STREAMLIT_URL` and `API_URL`. This is a best-effort workaround: GitHub can delay scheduled runs, and it disables scheduled workflows after 60 days without repository activity. The job re-enables itself on each run, but an occasional commit is the reliable fix.
 

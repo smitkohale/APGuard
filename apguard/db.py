@@ -15,9 +15,18 @@ SOURCE_TABLES = ["vendors", "contracts", "purchase_orders", "goods_receipts", "i
 
 
 def database_url() -> str:
-    url = os.getenv("DATABASE_URL")
+    url = (os.getenv("DATABASE_URL") or "").strip()
     if not url:
         raise RuntimeError("DATABASE_URL is not set. Copy .env.example to .env and point it at PostgreSQL.")
+    return normalize_url(url)
+
+
+def normalize_url(url: str) -> str:
+    """Hosting providers (Render, Neon, Supabase, Heroku) hand out postgres:// or
+    postgresql:// URLs; SQLAlchemy needs the driver named explicitly."""
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg2://" + url[len(prefix):]
     return url
 
 
