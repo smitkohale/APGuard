@@ -1,0 +1,62 @@
+# Keeps the public demo responsive.
+#
+# Streamlit Community Cloud puts an app to sleep after 12 hours without visitors,
+# and a plain HTTP ping doesn't wake it (the sleep page itself returns 200). This
+# job opens the app in a headless browser every 6 hours and clicks the wake-up
+# button if needed. It also warms the API on Render's free tier.
+#
+# This is a best-effort workaround, not a guarantee: GitHub may delay scheduled
+# runs, and it disables scheduled workflows in repositories with no activity for
+# 60 days. The last step re-enables this workflow on every run to reduce that
+# risk, but pushing a commit now and then is the reliable fix.
+#
+# Override the URLs with repository variables STREAMLIT_URL and API_URL
+# (Settings > Secrets and variables > Actions > Variables).
+name: Keep demo awake
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: keep-awake
+  cancel-in-progress: true
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      STREAMLIT_URL: ${{ vars.STREAMLIT_URL || 'https://apguard.streamlit.app' }}
+      API_URL: ${{ vars.API_URL || 'https://apguard.onrender.com' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install headless Chromium
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Wake the dashboard
+        run: node .github/scripts/keep-awake.mjs "$STREAMLIT_URL"
+
+      - name: Warm the API
+        # Render's free tier spins down after 15 minutes idle and takes about a
+        # minute to start, so allow retries. Non-fatal: the dashboard is the priority.
+        run: |
+          curl --fail --silent --show-error --retry 6 --retry-delay 15 --retry-all-errors \
+               --max-time 90 "$API_URL/health" || echo "API did not respond; it may be redeploying"
+
+      - name: Re-enable this workflow (guards against the 60-day inactivity rule)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/keep-awake.yml/enable"
