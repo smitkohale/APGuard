@@ -1,0 +1,63 @@
+# Builds or refreshes the hosted demo database from the Actions tab, so no local
+# copy of the project is needed.
+#
+# One-time setup: Settings > Secrets and variables > Actions > New repository
+# secret, name DATABASE_URL, value = the connection string of the hosted
+# PostgreSQL database (postgres://... or postgresql://... both work).
+#
+# Then: Actions > "Set up database" > Run workflow, type RESET, and run.
+# DESTRUCTIVE: drops and recreates every APGuard table, including review history.
+name: Set up database
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type RESET to drop and rebuild every APGuard table in the hosted database"
+        required: true
+      simulate_reviews:
+        description: "Add a simulated round of reviews so the workflow views have data"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: setup-database
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check confirmation
+        if: ${{ inputs.confirm != 'RESET' }}
+        run: |
+          echo "::error::Confirmation not given. Re-run and type RESET (capital letters) to proceed."
+          exit 1
+
+      - name: Check the DATABASE_URL secret exists
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Add a repository secret named DATABASE_URL first (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - run: pip install -r requirements.txt
+
+      - name: Generate, load, detect${{ inputs.simulate_reviews && ', simulate reviews' || '' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scripts/setup_database.py --yes ${{ !inputs.simulate_reviews && '--no-reviews' || '' }}
