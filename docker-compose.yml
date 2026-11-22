@@ -1,0 +1,56 @@
+# One command, whole stack:  docker compose up --build
+#   dashboard  http://localhost:8501
+#   API docs   http://localhost:8000/docs
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: apguard
+      POSTGRES_USER: apguard
+      POSTGRES_PASSWORD: apguard
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apguard -d apguard"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Generates data, builds the schema, loads it, runs detection and the
+  # evaluation, then exits. The API and dashboard start once it has succeeded.
+  init:
+    build: .
+    environment: &env
+      DATABASE_URL: postgresql+psycopg2://apguard:apguard@db:5432/apguard
+    user: root
+    command: >
+      sh -c "python data/generate_data.py &&
+             psql postgresql://apguard:apguard@db:5432/apguard -q -f db/schema.sql &&
+             python db/load_data.py &&
+             python scripts/run_pipeline.py &&
+             python scripts/simulate_reviews.py &&
+             python scripts/evaluate.py"
+    depends_on:
+      db: {condition: service_healthy}
+
+  api:
+    build: .
+    environment:
+      <<: *env
+      APGUARD_API_KEY: ${APGUARD_API_KEY:-dev-key-change-me}
+      ALLOWED_ORIGINS: http://localhost:8501
+    ports: ["8000:8000"]
+    depends_on:
+      init: {condition: service_completed_successfully}
+
+  dashboard:
+    build: .
+    environment: *env
+    command: ["streamlit", "run", "dashboard/app.py", "--server.port=8501", "--server.address=0.0.0.0",
+              "--server.headless=true"]
+    ports: ["8501:8501"]
+    depends_on:
+      init: {condition: service_completed_successfully}
+
+volumes:
+  pgdata:

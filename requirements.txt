@@ -4,9 +4,11 @@ numpy==2.4.4
 pandas==3.0.2
 plotly==6.9.0
 psycopg2-binary==2.9.12
-pytest==9.1.1
+python-dotenv==1.2.3
 python-multipart==0.0.32
+PyYAML==6.0.3
+scikit-learn==1.9.1
+scipy==1.18.1
 SQLAlchemy==2.0.52
 streamlit==1.61.1
 uvicorn==0.52.3
-python-dotenv==1.2.3

@@ -6,3 +6,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 data/generated/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/

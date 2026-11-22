@@ -1,0 +1,46 @@
+# APGuard detection thresholds.
+# Every run records a snapshot of this file in rule_runs.config, so any flag can
+# be traced back to the exact thresholds that produced it.
+
+approval_threshold: 5000.00        # single-invoice approval limit (R7, A1 context)
+
+duplicate_invoice:                 # R1
+  fuzzy: true                      # false = exact-match baseline (used in evaluation)
+  amount_tolerance_abs: 1.00       # dollars
+  amount_tolerance_pct: 0.005      # 0.5% of invoice total; the larger of the two applies
+  window_days: 90                  # resubmissions further apart than this are ignored
+  cross_po_window_days: 45         # resubmission keyed without its PO reference
+  cross_po_scope: missing_po_only  # any_po also matches across *different* POs: higher
+                                   # recall on re-keyed duplicates, far lower precision
+
+three_way_match:                   # R2
+  qty_tolerance: 0                 # units
+
+contract_price:                    # R3
+  price_tolerance_pct: 0.001
+
+tax_validation:                    # R6
+  tolerance_pct: 0.01
+  tolerance_abs: 0.02              # absorbs cent-level rounding on small invoices
+
+invoice_splitting:                 # R7
+  window_days: 10
+
+overpayment:                       # R8
+  tolerance_pct: 0.001
+  tolerance_abs: 0.05
+
+new_vendor_payment:                # R11
+  window_days: 30
+  min_payment: 10000.00
+
+benford:                           # A1
+  min_invoices: 100
+  mad_threshold: 0.015             # Nigrini first-digit "nonconformity" boundary
+  p_value: 0.001
+
+price_outlier:                     # A2
+  min_observations: 15
+  robust_z_threshold: 3.5
+  min_log_mad: 0.05                # spread floor (~5%) so tightly-contracted SKUs don't
+                                   # turn normal market purchases into extreme z-scores
